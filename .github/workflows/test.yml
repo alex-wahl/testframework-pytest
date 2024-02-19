@@ -1,4 +1,4 @@
-name: Configurations testing
+name: Web testing
 
 on:
   workflow_dispatch:
