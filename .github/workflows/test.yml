@@ -12,7 +12,7 @@ on:
 jobs:
   test-ikea:
     name: Ikea
-    runs-on: ubuntu-latest
+    runs-on: macos-13-xlarge
     steps:
       - uses: actions/checkout@v2
 
