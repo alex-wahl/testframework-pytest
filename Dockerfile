@@ -1,22 +1,25 @@
 # syntax=docker/dockerfile:1
 
-# Base image compatible with ARM64
-FROM --platform=linux/arm64 python:3.11.4-slim-bullseye AS base
+# Start from the official Python 3.11 image
+FROM python:3.11-slim AS base
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.7.1
 
-# Install OS dependencies required for Chrome and Poetry
+# Install OS dependencies required for Firefox and Chromium
+# Note: chromium-bsu is a game, not the browser. You might need to handle Chromium differently.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     firefox-esr \
-    chromium \
-    chromium-driver
+    chromium-bsu \
+    chromium-driver \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN curl -sSL https://install.python-poetry.org | python -
 
 # Add Poetry to PATH
 ENV PATH="/root/.local/bin:$PATH"
