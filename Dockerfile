@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
-FROM python:3.11.4-slim-bullseye AS base
 
+# Base image compatible with ARM64
+FROM --platform=linux/arm64 python:3.11.4-slim-bullseye AS base
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -10,38 +11,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
-    gconf-service  \
-    libasound2  \
-    libatk1.0-0  \
-    libcairo2  \
-    libcups2  \
-    libfontconfig1  \
-    libgdk-pixbuf2.0-0  \
-    libgtk-3-0  \
-    libnspr4  \
-    libpango-1.0-0  \
-    libxss1  \
-    fonts-liberation  \
-    libappindicator1  \
-    libnss3  \
-    lsb-release  \
-    xdg-utils
+    firefox-esr \
+    chromium \
+    chromium-driver
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
 # Add Poetry to PATH
 ENV PATH="/root/.local/bin:$PATH"
-
-# Install Chrome and ChromeDriver
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
-    chromium-driver \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Chrome
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN dpkg -i google-chrome-stable_current_amd64.deb; apt-get -fy install
 
 # Set the working directory in the container
 WORKDIR /app
@@ -55,9 +33,6 @@ RUN poetry config virtualenvs.create false \
 
 # Copy your application code to the container
 COPY . /app
-
-# Ensure WebDriver has executable permissions
-RUN chmod +x /app/resources/webdrivers/chromedriver_linux
 
 # The command to run tests
 ENTRYPOINT ["python3", "-m", "pytest", "-s"]

@@ -1,32 +1,27 @@
 import sys
-
 import pytest
-from selenium import webdriver
-from selenium.webdriver import ChromeOptions
-from selenium.webdriver.chrome.service import Service
-
+from libs.helper import create_driver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from libs.constants import WEBDRIVER
 
 
 @pytest.fixture()
 def setup():
-    os_driver_mapping = {
-        "linux": "chromedriver_linux",
-        "darwin": "chromedriver_mac",
-        "win32": "geckodriver"
+    os_browser_mapping = {
+        "linux": ("firefox", "geckodriver_linux", FirefoxOptions),
+        "darwin": ("chrome", "chromedriver_mac", ChromeOptions),
     }
-    operating_system = next(
-        (operating_system for operating_system in os_driver_mapping if sys.platform.startswith(operating_system)), None)
 
-    # Setup options
-    options = ChromeOptions()
-    options.add_argument("--start-maximized")
-    options.add_argument("--headless")
-
+    operating_system = next((os for os in os_browser_mapping if sys.platform.startswith(os)), None)
     if operating_system:
-        driver_path = f"{WEBDRIVER}/{os_driver_mapping[operating_system]}"
+        browser, driver_name, OptionsClass = os_browser_mapping[operating_system]
+        options = OptionsClass()
+        options.add_argument("--start-maximized")
+        options.add_argument("--headless")
+        driver_path = f"{WEBDRIVER}/{driver_name}"
         print(driver_path)
-        driver = webdriver.Chrome(service=Service(driver_path), options=options)
+        driver = create_driver(browser, driver_path, options)
         yield driver
         driver.quit()
     else:
