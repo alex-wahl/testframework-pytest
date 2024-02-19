@@ -1,0 +1,23 @@
+name: Configurations testing
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        type: choice
+        options:
+          - PROD
+
+jobs:
+  test-ikea:
+    name: Ikea
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run lineup tests
+        run: |
+            echo "Running tests for Ikea"
+            echo "Environment: ${{ github.event.inputs.environment }}"
+            docker compose run --rm testframework -s tests/web/ikea/test_ikea.py --env ${{ github.event.inputs.environment }}
