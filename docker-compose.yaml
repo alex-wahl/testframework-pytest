@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  testframework:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: testframework:latest
+    volumes:
+      - .:/app
