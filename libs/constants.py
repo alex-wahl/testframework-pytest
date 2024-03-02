@@ -2,7 +2,6 @@ import os
 from enum import Enum
 
 WORKING_DIRECTORY = os.getcwd()
-WEBDRIVER = f"{WORKING_DIRECTORY}/resources/webdrivers"
 
 
 class Environment(Enum):
