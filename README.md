@@ -1,3 +1,5 @@
+[![Web testing](https://github.com/alex-wahl/testframework-pytest/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/alex-wahl/testframework-pytest/actions/workflows/test.yml)
+
 # Test framework based on pytest
 Test framework to test backend, frontend and mobile apps
 
