@@ -11,6 +11,7 @@ on:
     inputs:
       environment:
         description: 'Environment to run tests against'
+        required: true
         type: choice
         options:
           - PROD
@@ -25,18 +26,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set environment variable
-        id: set-env
-        run: |
-          if [[ "${{ github.event_name }}" == "push" || "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
-          else
-            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-          fi
+        run: echo "ENVIRONMENT=${{ github.event.inputs.environment || 'PROD' }}" >> $GITHUB_ENV
 
-      - name: Run Docker Compose
+      - name: Build and run tests with Docker Compose
         run: |
           echo "Running tests for Ikea"
           echo "Environment: $ENVIRONMENT"
-          docker compose up -d
           docker compose run --rm testframework -s tests/web/ikea/test_ikea.py --env $ENVIRONMENT
           docker compose down

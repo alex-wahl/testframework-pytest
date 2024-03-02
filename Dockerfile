@@ -8,21 +8,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.7.1
 
-# Install OS dependencies required for Firefox and Chromium
-# Note: chromium-bsu is a game, not the browser. You might need to handle Chromium differently.
+# Install OS dependencies required for Firefox
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     firefox-esr \
-    chromium-bsu \
-    chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python -
+# Install Poetry using pip to ensure it uses the correct version of Python
+RUN python3 -m pip install "poetry==$POETRY_VERSION"
 
-# Add Poetry to PATH
-ENV PATH="/root/.local/bin:$PATH"
+# Set Poetry configuration to not create a virtual env within the Docker container
+RUN poetry config virtualenvs.create false
 
 # Set the working directory in the container
 WORKDIR /app
@@ -31,8 +28,7 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock* /app/
 
 # Install project dependencies including dev dependencies
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-root
+RUN poetry install --no-root
 
 # Copy your application code to the container
 COPY . /app
