@@ -23,15 +23,12 @@ ENV PATH="/root/.local/bin:$PATH"
 # Set the working directory in the container
 WORKDIR /app
 
-# Copying only the dependencies file at first to leverage Docker cache
-COPY pyproject.toml poetry.lock* /app/
+# Copy your application code to the container
+COPY . /app
 
 # Install project dependencies including dev dependencies
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi
-
-# Copy your application code to the container
-COPY . /app
 
 # The command to run tests
 ENTRYPOINT ["python3", "-m", "pytest", "-s"]
