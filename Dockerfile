@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
 
-# Start from the official Python 3.11 image
 FROM python:3.11-slim AS base
 
 # Set environment variables
@@ -8,18 +7,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.7.1
 
-# Install OS dependencies required for Firefox
+# Install OS dependencies required for Firefox and setting up geckodriver
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
     firefox-esr \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry using pip to ensure it uses the correct version of Python
-RUN python3 -m pip install "poetry==$POETRY_VERSION"
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python -
 
-# Set Poetry configuration to not create a virtual env within the Docker container
-RUN poetry config virtualenvs.create false
+# Add Poetry to PATH
+ENV PATH="/root/.local/bin:$PATH"
 
 # Set the working directory in the container
 WORKDIR /app
@@ -28,7 +27,8 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock* /app/
 
 # Install project dependencies including dev dependencies
-RUN poetry install --no-root
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
 # Copy your application code to the container
 COPY . /app
