@@ -24,10 +24,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set environment variable
+        id: set-env
+        run: |
+          if [[ "${{ github.event_name }}" == "push" || "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "ENVIRONMENT=PROD" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          fi
+
       - name: Run Docker Compose
         run: |
           echo "Running tests for Ikea"
-          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Environment: $ENVIRONMENT"
           docker compose up -d
-          docker compose run --rm testframework -s tests/web/ikea/test_ikea.py --env ${{ github.event.inputs.environment }}
+          docker compose run --rm testframework -s tests/web/ikea/test_ikea.py --env $ENVIRONMENT
           docker compose down
