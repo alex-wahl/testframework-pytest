@@ -1,3 +1,6 @@
+import allure
+from allure_commons.types import AttachmentType
+
 from tests.web.ikea.pom.home_page import HomePage
 
 

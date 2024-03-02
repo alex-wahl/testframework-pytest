@@ -1,8 +1,11 @@
 import sys
+
+import allure
 import pytest
-from libs.helper import create_driver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+
+from libs.helper import create_driver
 
 
 @pytest.fixture()
@@ -23,3 +26,20 @@ def setup():
         driver.quit()
     else:
         raise ValueError(f"Unsupported operating system: {sys.platform}")
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+    if report.when == 'call' and report.failed:
+        try:
+            if 'setup' in item.fixturenames:
+                web_driver = item.funcargs['setup']
+            else:
+                print('Driver not found in test.')
+                return
+            screenshot = web_driver.get_screenshot_as_png()
+            allure.attach(screenshot, name='screenshot', attachment_type=allure.attachment_type.PNG)
+        except Exception as e:
+            print(f'Failed to capture screenshot: {e}')
