@@ -15,10 +15,12 @@ class BasePage(metaclass=SingletonMeta):
         self.driver = setup
         self.driver.get(url)
 
-    def get_title(self):
+    def wait_until_page_is_fully_loaded(self):
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, self.TAG_NAME))
         )
+
+    def get_title(self):
         return self.driver.execute_script(f"return document.querySelector('{self.TITLE}').textContent;")
 
     def make_screenshot(self, filename="screenshot.png"):
