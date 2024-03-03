@@ -4,10 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from libs.helper import SingletonMeta
 
-
-class BasePage(metaclass=SingletonMeta):
+class BasePage:
     TITLE = "head > title"
     TAG_NAME = "body"
 
@@ -19,6 +17,12 @@ class BasePage(metaclass=SingletonMeta):
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, self.TAG_NAME))
         )
+
+    def wait_until_element_is_visible(self, element_id):
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, element_id)))
+
+    def click_element(self, by: By, element_id: str):
+        self.driver.find_element(by, element_id).click()
 
     def get_title(self):
         return self.driver.execute_script(f"return document.querySelector('{self.TITLE}').textContent;")

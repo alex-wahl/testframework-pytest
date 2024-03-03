@@ -40,7 +40,7 @@ def pytest_runtest_makereport(item, call):
             else:
                 print('Driver not found in test.')
                 return
-            screenshot = web_driver.get_full_page_screenshot_as_png()
+            screenshot = web_driver.get_screenshot_as_png()
             allure.attach(screenshot, name='screenshot', attachment_type=allure.attachment_type.PNG)
         except Exception as e:
             print(f'Failed to capture screenshot: {e}')
