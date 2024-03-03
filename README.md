@@ -5,7 +5,6 @@ Test framework to test backend, frontend and mobile apps
 
 ## Patterns:    
 - Page Object Model
-- Singleton
 
 ## Run tests:
 ```bash
