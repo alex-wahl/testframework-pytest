@@ -1,4 +1,5 @@
 import pathlib
+from functools import wraps
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -28,3 +29,25 @@ class SingletonMeta(type):
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
         return cls._instances[cls]
+
+    @staticmethod
+    def reset_instance(cls):
+        if cls in cls._instances:
+            del cls._instances[cls]
+
+
+def reset_singleton_after_test(cls):
+    def decorator(test_func):
+        @wraps(test_func)
+        def wrapper(*args, **kwargs):
+            try:
+                # Execute the test function
+                result = test_func(*args, **kwargs)
+            finally:
+                # Ensure the singleton instance is reset after the test
+                SingletonMeta.reset_instance(cls)
+            return result
+
+        return wrapper
+
+    return decorator
