@@ -23,3 +23,13 @@ class TestIkea:
         home_page.accept_coockies()
         sleep(1)
         home_page.make_screenshot()
+
+    @pytest.mark.search
+    @allure.title("Ikea search item")
+    def test_search(self, setup, host):
+        home_page = HomePage(setup, host)
+        home_page.wait_until_page_is_fully_loaded()
+        home_page.make_screenshot()
+        home_page.search_for("pax bergsbo kleiderschrank")
+        assert home_page.get_search_summary() == "pax bergsbo kleiderschrank"
+        home_page.make_screenshot()
