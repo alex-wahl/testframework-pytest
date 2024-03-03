@@ -1,5 +1,4 @@
 import allure
-from allure_commons.types import AttachmentType
 
 from tests.web.ikea.pom.home_page import HomePage
 
@@ -9,3 +8,4 @@ class TestIkea:
         home_page = HomePage(setup, host)
         assert home_page.get_title() == "Frische Einrichtungsideen & erschwingliche Möbel - IKEA Deutschland"
         print(home_page.get_title())
+        home_page.make_screenshot()
